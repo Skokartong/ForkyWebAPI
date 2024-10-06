@@ -149,6 +149,11 @@ namespace ForkyWebAPI.Services
                 new Claim(ClaimTypes.Role, existingUser.Role)
             };
 
+            foreach (var claim in claims)
+            {
+                Console.WriteLine($"Claim Type: {claim.Type}, Claim Value: {claim.Value}");
+            }
+
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),

@@ -143,10 +143,11 @@ namespace ForkyWebAPI.Services
         {
             if (availabilityCheckDTO == null)
             {
+                Console.WriteLine("availabilityCheckDTO=null");
                 throw new ArgumentNullException(nameof(availabilityCheckDTO), "Availability check information cannot be null.");
             }
-
-            var availableTables = await _restaurantRepo.GetAvailableTablesAsync(
+            
+                var availableTables = await _restaurantRepo.GetAvailableTablesAsync(
                 availabilityCheckDTO.FK_RestaurantId,
                 availabilityCheckDTO.StartTime,
                 availabilityCheckDTO.EndTime,
