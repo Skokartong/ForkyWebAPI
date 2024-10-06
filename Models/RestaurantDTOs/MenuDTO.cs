@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ForkyWebAPI.Models.RestaurantDTOs
 {
@@ -20,6 +21,7 @@ namespace ForkyWebAPI.Models.RestaurantDTOs
         public double Price { get; set; }
 
         [Required]
+        [ForeignKey("Restaurant")]
         public int FK_RestaurantId { get; set; }
     }
 }
