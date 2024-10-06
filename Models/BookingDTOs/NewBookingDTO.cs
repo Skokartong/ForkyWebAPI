@@ -9,5 +9,6 @@ namespace ForkyWebAPI.Models.BookingDTOs
         public DateTime BookingEnd { get; set; }
         public string? Message { get; set; }
         public int FK_RestaurantId { get; set; }
+        public int FK_AccountId { get; set; }
     }
 }

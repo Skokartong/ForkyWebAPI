@@ -153,17 +153,17 @@ namespace ForkyWebAPI.Controllers
 
         [HttpPost]
         [Route("/addtable")]
-        public async Task<IActionResult> AddTable([FromBody] TableDTO tableDTO)
+        public async Task<IActionResult> AddTable([FromBody] NewTableDTO newTableDTO)
         {
-            await _restaurantService.AddTableAsync(tableDTO);
+            await _restaurantService.AddTableAsync(newTableDTO);
             return Created("", new {message = "Table created successfully"}); 
         }
 
         [HttpPut]
         [Route("/updatetable/{tableId}")]
-        public async Task<IActionResult> UpdateTable(int tableId,[FromBody] TableDTO tableDTO)
+        public async Task<IActionResult> UpdateTable(int tableId,[FromBody] UpdateTableDTO updateTableDTO)
         {
-            await _restaurantService.UpdateTableAsync(tableId, tableDTO);
+            await _restaurantService.UpdateTableAsync(tableId, updateTableDTO);
             return NoContent(); 
         }
 

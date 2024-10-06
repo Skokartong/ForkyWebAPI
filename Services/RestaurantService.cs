@@ -200,14 +200,13 @@ namespace ForkyWebAPI.Services
             }).ToList();
         }
 
-        public async Task AddTableAsync(TableDTO tableDTO)
+        public async Task AddTableAsync(NewTableDTO newTableDTO)
         {
             var table = new Table
             {
-                Id = tableDTO.Id,
-                TableNumber = tableDTO.TableNumber,
-                AmountOfSeats = tableDTO.AmountOfSeats,
-                FK_RestaurantId = tableDTO.FK_RestaurantId,
+                TableNumber = newTableDTO.TableNumber,
+                AmountOfSeats = newTableDTO.AmountOfSeats,
+                FK_RestaurantId = newTableDTO.FK_RestaurantId,
             };
 
             await _restaurantRepo.AddTableAsync(table);
@@ -218,14 +217,14 @@ namespace ForkyWebAPI.Services
             await _restaurantRepo.DeleteTableAsync(tableId);
         }
 
-        public async Task UpdateTableAsync(int tableId, TableDTO tableDTO)
+        public async Task UpdateTableAsync(int tableId, UpdateTableDTO updateTableDTO)
         {
             var table = new Table
             {
                 Id = tableId,
-                TableNumber = tableDTO.TableNumber,
-                AmountOfSeats = tableDTO.AmountOfSeats,
-                FK_RestaurantId = tableDTO.FK_RestaurantId,
+                TableNumber = updateTableDTO.TableNumber,
+                AmountOfSeats = updateTableDTO.AmountOfSeats,
+                FK_RestaurantId = updateTableDTO.FK_RestaurantId,
             };
 
             await _restaurantRepo.UpdateTableAsync(tableId, table);

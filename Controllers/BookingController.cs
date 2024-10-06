@@ -22,27 +22,19 @@ namespace ForkyWebAPI.Controllers
 
         [HttpPost]
         [Route("/newbooking")]
-        public async Task<IActionResult> CreateBooking([FromBody] NewBookingDTO newBookingDTO)
+        public async Task<IActionResult> BookTable([FromBody] NewBookingDTO newBookingDTO)
         {
-            var accountIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-            if (accountIdClaim == null)
-            {
-                return Unauthorized("Account ID is missing in the token.");
-            }
-
-            int accountId = int.Parse(accountIdClaim.Value); 
-
             try
             {
-                await _bookingService.AddBookingAsync(newBookingDTO, accountId);
-                return CreatedAtAction(nameof(GetBookingById), new { bookingId = newBookingDTO.FK_RestaurantId }, newBookingDTO);
+                var result = await _bookingService.AddBookingAsync(newBookingDTO);
+
+                return Created("", new { message = result });
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new { message = ex.Message });
             }
         }
-
 
         [HttpDelete]
         [Route("/deletebooking/{bookingId}")]
@@ -99,6 +91,11 @@ namespace ForkyWebAPI.Controllers
         [Route("/checkavailability")]
         public async Task<ActionResult<IEnumerable<TableDTO>>> CheckAvailability([FromBody] AvailabilityCheckDTO availabilityCheckDTO)
         {
+            Console.WriteLine($"Restaurantid: {availabilityCheckDTO.FK_RestaurantId}");
+            Console.WriteLine($"Starttime: {availabilityCheckDTO.StartTime}");
+            Console.WriteLine($"Endtime: {availabilityCheckDTO.EndTime}");
+            Console.WriteLine($"NumberOfGuests: {availabilityCheckDTO.NumberOfGuests}");
+
             var availableTables = await _bookingService.CheckAvailabilityAsync(availabilityCheckDTO);
             return Ok(availableTables);
         }

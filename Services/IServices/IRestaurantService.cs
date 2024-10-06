@@ -14,8 +14,8 @@ namespace ForkyWebAPI.Services.IServices
         Task DeleteDishOrDrinkAsync(int menuId);
         Task UpdateDishOrDrinkAsync(int menuId, MenuDTO updateMenuDTO);
         Task<IEnumerable<TableDTO>> GetTablesByRestaurantIdAsync(int restaurantId);
-        Task AddTableAsync(TableDTO tableDTO);
+        Task AddTableAsync(NewTableDTO newTableDTO);
         Task DeleteTableAsync(int tableId);
-        Task UpdateTableAsync(int tableId, TableDTO tableDTO);
+        Task UpdateTableAsync(int tableId, UpdateTableDTO updateTableDTO);
     }
 }

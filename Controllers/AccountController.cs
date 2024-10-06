@@ -19,6 +19,14 @@ namespace ForkyWebAPI.Controllers
         }
 
         [HttpPost]
+        [Route("/login")]
+        public async Task<IActionResult> LogIn([FromBody] LoginDTO loginDTO)
+        {
+            string token = await _accountService.LogInAsync(loginDTO);
+            return Ok(new { token });
+        }
+
+        [HttpPost]
         [Route("/register")]
         public async Task<IActionResult> Register([FromBody] NewAccountDTO accountDTO)
         {

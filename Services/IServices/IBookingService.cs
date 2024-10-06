@@ -8,7 +8,7 @@ namespace ForkyWebAPI.Services.IServices
 {
     public interface IBookingService
     {
-        Task AddBookingAsync(NewBookingDTO newBookingDTO, int accountId);
+        Task<string> AddBookingAsync(NewBookingDTO newBookingDTO);
         Task DeleteBookingAsync(int bookingId);
         Task UpdateBookingAsync(int bookingId, NewBookingDTO updateBookingDTO);
         Task<ViewBookingDTO> GetBookingByIdAsync(int bookingId);

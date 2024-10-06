@@ -22,24 +22,46 @@ namespace ForkyWebAPI.Services
             _restaurantRepo = restaurantRepo;
         }
 
-        public async Task AddBookingAsync(NewBookingDTO newBookingDTO, int accountId)
+        public async Task<string> AddBookingAsync(NewBookingDTO newBookingDTO)
         {
-            if (newBookingDTO == null)
+            var availabilityCheck = new AvailabilityCheckDTO
             {
-                throw new ArgumentNullException(nameof(newBookingDTO), "Booking information cannot be null.");
+                FK_RestaurantId = newBookingDTO.FK_RestaurantId,
+                StartTime = newBookingDTO.BookingStart,
+                EndTime = newBookingDTO.BookingEnd,
+                NumberOfGuests = newBookingDTO.NumberOfGuests
+            };
+
+            var availableTables = await CheckAvailabilityAsync(availabilityCheck);
+            var selectedTable = availableTables.First();
+
+            Console.WriteLine($"SELECTED TABLE: Id: {selectedTable.Id}, Capacity: {selectedTable.AmountOfSeats}, FK_RestaurantId: {selectedTable.FK_RestaurantId}");
+
+            Console.WriteLine($"selectedTable.TableNumber",selectedTable.TableNumber);
+            Console.WriteLine($"selectedTable.FK_RestaurantId",selectedTable.FK_RestaurantId);
+            Console.WriteLine($"selectedTable.Id",selectedTable.Id);
+            Console.WriteLine($"selectedTable.AmountOfSeats", selectedTable.AmountOfSeats);
+
+
+            if (selectedTable == null)
+            {
+                throw new Exception("No available tables found for the selected time and number of guests.");
             }
 
-            var booking = new Booking
+            var reservation = new Booking
             {
                 NumberOfGuests = newBookingDTO.NumberOfGuests,
                 BookingStart = newBookingDTO.BookingStart,
                 BookingEnd = newBookingDTO.BookingEnd,
                 Message = newBookingDTO.Message,
-                FK_AccountId = accountId,
-                FK_RestaurantId = newBookingDTO.FK_RestaurantId
+                FK_AccountId = newBookingDTO.FK_AccountId,
+                FK_RestaurantId = newBookingDTO.FK_RestaurantId,
+                FK_TableId = selectedTable.Id
             };
 
-            await _bookingRepo.AddBookingAsync(booking);
+            await _bookingRepo.AddBookingAsync(reservation);
+
+            return "Table booked successfully";
         }
 
         public async Task DeleteBookingAsync(int bookingId)
@@ -132,6 +154,7 @@ namespace ForkyWebAPI.Services
 
             var availableTableDTOs = availableTables.Select(t => new TableDTO
             {
+                Id = t.Id,
                 TableNumber = t.TableNumber,
                 AmountOfSeats = t.AmountOfSeats,
                 FK_RestaurantId = t.FK_RestaurantId
