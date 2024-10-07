@@ -68,6 +68,7 @@ namespace ForkyWebAPI.Services
 
             if (existingAccount != null)
             {
+                existingAccount.Id = accountId;
                 existingAccount.UserName = accountDTO.UserName;
                 existingAccount.Email = accountDTO.Email;
                 existingAccount.Address = accountDTO.Address;
@@ -87,6 +88,7 @@ namespace ForkyWebAPI.Services
 
             return accounts.Select(account => new ViewAccountDTO
             {
+                Id = account.Id,
                 UserName = account.UserName,
                 FirstName = account.FirstName,
                 LastName = account.LastName,
@@ -107,6 +109,7 @@ namespace ForkyWebAPI.Services
 
             return new ViewAccountDTO
             {
+                Id = accountId,
                 UserName = account.UserName,
                 FirstName = account.FirstName,
                 LastName = account.LastName,
@@ -148,11 +151,6 @@ namespace ForkyWebAPI.Services
                 new Claim(ClaimTypes.Email, existingUser.Email),
                 new Claim(ClaimTypes.Role, existingUser.Role)
             };
-
-            foreach (var claim in claims)
-            {
-                Console.WriteLine($"Claim Type: {claim.Type}, Claim Value: {claim.Value}");
-            }
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
