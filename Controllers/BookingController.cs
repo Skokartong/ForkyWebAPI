@@ -1,6 +1,6 @@
 ﻿using ForkyWebAPI.Models;
 using ForkyWebAPI.Models.BookingDTOs;
-using ForkyWebAPI.Models.RestaurantDTOs;
+using ForkyWebAPI.Models.TableDTOs;
 using ForkyWebAPI.Services.IServices;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;

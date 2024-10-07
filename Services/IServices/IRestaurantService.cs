@@ -1,21 +1,30 @@
-﻿using ForkyWebAPI.Models.RestaurantDTOs;
+﻿using ForkyWebAPI.Models;
+using ForkyWebAPI.Models.MenuDTOs;
+using ForkyWebAPI.Models.RestaurantDTOs;
+using ForkyWebAPI.Models.TableDTOs;
 
 namespace ForkyWebAPI.Services.IServices
 {
     public interface IRestaurantService
     {
-        Task AddRestaurantAsync(RestaurantDTO restaurantDTO);
+        Task AddRestaurantAsync(AddRestaurantDTO addRestaurantDTO);
         Task DeleteRestaurantAsync(int restaurantId);
-        Task UpdateRestaurantAsync(int restaurantId, RestaurantDTO updatedRestaurantDTO);
-        Task<RestaurantDTO> GetRestaurantByIdAsync(int restaurantId);
-        Task<IEnumerable<RestaurantDTO>> GetAllRestaurantsAsync();
-        Task<IEnumerable<MenuDTO>> SeeMenuAsync(int restaurantId);
-        Task AddDishOrDrinkAsync(MenuDTO menuDTO);
-        Task DeleteDishOrDrinkAsync(int menuId);
-        Task UpdateDishOrDrinkAsync(int menuId, MenuDTO updateMenuDTO);
-        Task<IEnumerable<TableDTO>> GetTablesByRestaurantIdAsync(int restaurantId);
+        Task UpdateRestaurantAsync(int restaurantId, UpdateRestaurantDTO updateRestaurantDTO);
+
         Task AddTableAsync(NewTableDTO newTableDTO);
         Task DeleteTableAsync(int tableId);
         Task UpdateTableAsync(int tableId, UpdateTableDTO updateTableDTO);
+
+        Task AddDishOrDrinkAsync(AddDishDTO dishDTO);
+        Task DeleteDishOrDrinkAsync(int menuId);
+        Task UpdateDishOrDrinkAsync(int menuId, UpdateMenuDTO updateMenuDTO);
+
+        Task<ViewRestaurantDTO?> GetRestaurantByIdAsync(int restaurantId);
+        Task<IEnumerable<ViewTableDTO?>> GetTablesByRestaurantIdAsync(int restaurantId);
+        Task<IEnumerable<ViewMenuDTO?>> SeeMenuAsync(int restaurantId);
+
+        Task<IEnumerable<ViewRestaurantDTO?>> GetAllRestaurantsAsync();
+        Task<IEnumerable<ViewMenuDTO?>> GetAllMenusAsync();
+        Task<IEnumerable<ViewTableDTO?>> GetAllTablesAsync();
     }
 }

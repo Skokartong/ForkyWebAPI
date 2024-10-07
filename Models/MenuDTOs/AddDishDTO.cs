@@ -1,12 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
-namespace ForkyWebAPI.Models.RestaurantDTOs
+namespace ForkyWebAPI.Models.MenuDTOs
 {
-    public class MenuDTO
+    public class AddDishDTO
     {
-        [Required]
-        [MaxLength(30)]
         public string NameOfDish { get; set; }
 
         [MaxLength(30)]

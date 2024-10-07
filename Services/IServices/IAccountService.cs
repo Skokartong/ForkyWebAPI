@@ -9,7 +9,7 @@ namespace ForkyWebAPI.Services.IServices
         Task DeleteAccountAsync(int accountId);
         Task UpdateAccountAsync(int accountId, UpdateAccountDTO accountDTO);
         Task<List<ViewAccountDTO>> GetAllAccountsAsync();
-        Task<ViewAccountDTO> GetAccountByIdAsync(int accountId);
+        Task<ViewAccountDTO?> GetAccountByIdAsync(int accountId);
         Task<string> LogInAsync(LoginDTO loginDTO);
     }
 }

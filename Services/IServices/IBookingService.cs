@@ -1,6 +1,6 @@
 ﻿using ForkyWebAPI.Models;
 using ForkyWebAPI.Models.BookingDTOs;
-using ForkyWebAPI.Models.RestaurantDTOs;
+using ForkyWebAPI.Models.TableDTOs;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

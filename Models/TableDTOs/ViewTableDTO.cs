@@ -1,11 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
 
-namespace ForkyWebAPI.Models.RestaurantDTOs
+namespace ForkyWebAPI.Models.TableDTOs
 {
-    public class TableDTO
+    public class ViewTableDTO
     {
-        public int Id { get; set; }
         public int TableNumber { get; set; }
         public int AmountOfSeats { get; set; }
 

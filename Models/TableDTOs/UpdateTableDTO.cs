@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace ForkyWebAPI.Models.RestaurantDTOs
+namespace ForkyWebAPI.Models.TableDTOs
 {
-    public class NewTableDTO
+    public class UpdateTableDTO
     {
         public int TableNumber { get; set; }
         public int AmountOfSeats { get; set; }

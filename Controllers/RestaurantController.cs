@@ -1,4 +1,6 @@
-﻿using ForkyWebAPI.Models.RestaurantDTOs;
+﻿using ForkyWebAPI.Models.MenuDTOs;
+using ForkyWebAPI.Models.RestaurantDTOs;
+using ForkyWebAPI.Models.TableDTOs;
 using ForkyWebAPI.Services.IServices;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -21,11 +23,11 @@ namespace ForkyWebAPI.Controllers
 
         [HttpPost]
         [Route("/addrestaurant")]
-        public async Task<IActionResult> CreateRestaurant([FromBody] RestaurantDTO restaurantDTO)
+        public async Task<IActionResult> CreateRestaurant([FromBody] AddRestaurantDTO addRestaurantDTO)
         {
             try
             {
-                await _restaurantService.AddRestaurantAsync(restaurantDTO);
+                await _restaurantService.AddRestaurantAsync(addRestaurantDTO);
                 return Created();
             }
             catch (Exception ex)
@@ -51,11 +53,11 @@ namespace ForkyWebAPI.Controllers
 
         [HttpPut]
         [Route("/updaterestaurant/{restaurantId}")]
-        public async Task<IActionResult> UpdateRestaurant(int restaurantId, [FromBody] RestaurantDTO updatedRestaurantDTO)
+        public async Task<IActionResult> UpdateRestaurant(int restaurantId, [FromBody] UpdateRestaurantDTO updateRestaurantDTO)
         {
             try
             {
-                await _restaurantService.UpdateRestaurantAsync(restaurantId, updatedRestaurantDTO);
+                await _restaurantService.UpdateRestaurantAsync(restaurantId, updateRestaurantDTO);
                 return NoContent();
             }
             catch (KeyNotFoundException ex)
@@ -66,7 +68,7 @@ namespace ForkyWebAPI.Controllers
 
         [HttpGet]
         [Route("/viewrestaurant/{restaurantId}")]
-        public async Task<ActionResult<RestaurantDTO>> GetRestaurantById(int restaurantId)
+        public async Task<ActionResult<ViewRestaurantDTO>> GetRestaurantById(int restaurantId)
         {
             var restaurant = await _restaurantService.GetRestaurantByIdAsync(restaurantId);
             if (restaurant == null)
@@ -78,7 +80,7 @@ namespace ForkyWebAPI.Controllers
 
         [HttpGet]
         [Route("/viewrestaurants")]
-        public async Task<ActionResult<IEnumerable<RestaurantDTO>>> GetAllRestaurants()
+        public async Task<ActionResult<IEnumerable<ViewRestaurantDTO>>> GetAllRestaurants()
         {
             var restaurants = await _restaurantService.GetAllRestaurantsAsync();
             return Ok(restaurants);
@@ -86,7 +88,7 @@ namespace ForkyWebAPI.Controllers
 
         [HttpGet]
         [Route("/viewmenu/{restaurantId}")]
-        public async Task<ActionResult<IEnumerable<MenuDTO>>> SeeMenu(int restaurantId)
+        public async Task<ActionResult<IEnumerable<ViewMenuDTO>>> SeeMenu(int restaurantId)
         {
             var menu = await _restaurantService.SeeMenuAsync(restaurantId);
             return Ok(menu);
@@ -94,12 +96,12 @@ namespace ForkyWebAPI.Controllers
 
         [HttpPost]
         [Route("/addmenuitem/{restaurantId}")]
-        public async Task<IActionResult> AddDishOrDrink(int restaurantId, [FromBody] MenuDTO menuDTO)
+        public async Task<IActionResult> AddDishOrDrink(int restaurantId, [FromBody] AddDishDTO dishDTO)
         {
             try
             {
-                await _restaurantService.AddDishOrDrinkAsync(menuDTO);
-                return CreatedAtAction(nameof(SeeMenu), new { restaurantId }, menuDTO);
+                await _restaurantService.AddDishOrDrinkAsync(dishDTO);
+                return CreatedAtAction(nameof(SeeMenu), new { restaurantId }, dishDTO);
             }
             catch (Exception ex)
             {
@@ -124,7 +126,7 @@ namespace ForkyWebAPI.Controllers
 
         [HttpPut]
         [Route("/updatemenuitem/{menuId}")]
-        public async Task<IActionResult> UpdateDishOrDrink(int menuId, [FromBody] MenuDTO updateMenuDTO)
+        public async Task<IActionResult> UpdateDishOrDrink(int menuId, [FromBody] UpdateMenuDTO updateMenuDTO)
         {
             try
             {
@@ -136,10 +138,26 @@ namespace ForkyWebAPI.Controllers
                 return NotFound(ex.Message);
             }
         }
+
+        [HttpGet]
+        [Route("/viewtables")]
+        public async Task<ActionResult<IEnumerable<ViewTableDTO>>> ViewAllTables()
+        {
+            var tables = await _restaurantService.GetAllTablesAsync();
+            return Ok(tables);
+        }
+
+        [HttpGet]
+        [Route("/viewmenus")]
+        public async Task<ActionResult<IEnumerable<ViewMenuDTO>>> ViewAllMenus()
+        {
+            var menus = await _restaurantService.GetAllMenusAsync();
+            return Ok(menus);
+        }
       
         [HttpGet]
         [Route("/viewtables/{restaurantId}")]
-        public async Task<IActionResult> ViewTables(int restaurantId)
+        public async Task<ActionResult<IEnumerable<ViewTableDTO>>> ViewTables(int restaurantId)
         {
             var tables = await _restaurantService.GetTablesByRestaurantIdAsync(restaurantId);
 

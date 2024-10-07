@@ -16,7 +16,7 @@ namespace ForkyWebAPI.Data.Repos
             _context = context;
         }
 
-        public async Task AddRestaurantAsync(Models.Restaurant restaurant)
+        public async Task AddRestaurantAsync(Restaurant restaurant)
         {
             await _context.Restaurants.AddAsync(restaurant);
             await _context.SaveChangesAsync();
@@ -31,7 +31,7 @@ namespace ForkyWebAPI.Data.Repos
                 await _context.SaveChangesAsync();
             }
         }
-        public async Task UpdateRestaurantAsync(int restaurantId, Models.Restaurant updatedRestaurant)
+        public async Task UpdateRestaurantAsync(int restaurantId, Restaurant updatedRestaurant)
         {
             var restaurant = await _context.Restaurants.FindAsync(restaurantId);
             if (restaurant != null)
@@ -54,7 +54,17 @@ namespace ForkyWebAPI.Data.Repos
             return await _context.Restaurants.ToListAsync();
         }
 
-        public async Task<IEnumerable<Table>> GetTablesByRestaurantIdAsync(int restaurantId)
+        public async Task<IEnumerable<Table?>> GetAllTablesAsync()
+        {
+            return await _context.Tables.ToListAsync();
+        }
+        
+        public async Task<IEnumerable<Menu?>> GetAllMenusAsync()
+        {
+            return await _context.Menus.ToListAsync();
+        }
+
+        public async Task<IEnumerable<Table?>> GetTablesByRestaurantIdAsync(int restaurantId)
         {
             return await _context.Tables.Where(t => t.FK_RestaurantId == restaurantId).ToListAsync();
         }
@@ -87,7 +97,7 @@ namespace ForkyWebAPI.Data.Repos
             }
         }
 
-        public async Task<IEnumerable<Table>> GetAvailableTablesAsync(int restaurantId, DateTime startTime, DateTime endTime, int numberOfGuests)
+        public async Task<IEnumerable<Table?>> GetAvailableTablesAsync(int restaurantId, DateTime startTime, DateTime endTime, int numberOfGuests)
         {
                 return await _context.Tables
         .Where(t => t.FK_RestaurantId == restaurantId &&
