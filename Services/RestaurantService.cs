@@ -80,6 +80,7 @@ namespace ForkyWebAPI.Services
 
             var restaurantDTO = new ViewRestaurantDTO
             {
+                Id = restaurantId,
                 RestaurantName = restaurant.RestaurantName,
                 TypeOfRestaurant = restaurant.TypeOfRestaurant,
                 Location = restaurant.Location,
@@ -98,6 +99,7 @@ namespace ForkyWebAPI.Services
             {
                 restaurantDTOs.Add(new ViewRestaurantDTO
                 {
+                    Id = restaurant.Id,
                     RestaurantName = restaurant.RestaurantName,
                     TypeOfRestaurant = restaurant.TypeOfRestaurant,
                     Location = restaurant.Location,
@@ -117,6 +119,7 @@ namespace ForkyWebAPI.Services
             {
                 menuDTOs.Add(new ViewMenuDTO
                 {
+                    Id = menu.Id,
                     NameOfDish = menu.NameOfDish,
                     Drink = menu.Drink,
                     IsAvailable = menu.IsAvailable,
@@ -195,6 +198,7 @@ namespace ForkyWebAPI.Services
             {
                 tableDTOs.Add(new ViewTableDTO
                 {
+                    Id = table.Id,
                     TableNumber = table.TableNumber,
                     AmountOfSeats = table.AmountOfSeats,
                     FK_RestaurantId = table.FK_RestaurantId,
@@ -213,6 +217,7 @@ namespace ForkyWebAPI.Services
             {
                 menuDTOs.Add(new ViewMenuDTO
                 {
+                    Id = menu.Id,
                     NameOfDish = menu.NameOfDish,
                     Drink = menu.Drink,
                     Price = menu.Price,

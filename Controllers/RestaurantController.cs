@@ -95,13 +95,13 @@ namespace ForkyWebAPI.Controllers
         }
 
         [HttpPost]
-        [Route("/addmenuitem/{restaurantId}")]
-        public async Task<IActionResult> AddDishOrDrink(int restaurantId, [FromBody] AddDishDTO dishDTO)
+        [Route("/addmenuitem")]
+        public async Task<IActionResult> AddDishOrDrink([FromBody] AddDishDTO dishDTO)
         {
             try
             {
                 await _restaurantService.AddDishOrDrinkAsync(dishDTO);
-                return CreatedAtAction(nameof(SeeMenu), new { restaurantId }, dishDTO);
+                return Created();
             }
             catch (Exception ex)
             {

@@ -4,6 +4,7 @@ namespace ForkyWebAPI.Models.MenuDTOs
 {
     public class ViewMenuDTO
     {
+        public int Id { get; set; }
         public string NameOfDish { get; set; }
 
         public string Drink { get; set; }

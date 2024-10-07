@@ -4,6 +4,7 @@ namespace ForkyWebAPI.Models.TableDTOs
 {
     public class ViewTableDTO
     {
+        public int Id { get; set; }
         public int TableNumber { get; set; }
         public int AmountOfSeats { get; set; }
 
