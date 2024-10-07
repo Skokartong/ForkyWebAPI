@@ -23,7 +23,7 @@ namespace ForkyWebAPI.Models.AccountDTOs
         public string Address { get; set; }
 
         [Required]
-        [StringLength(50, MinimumLength = 5)]
+        [StringLength(50)]
         public string UserName { get; set; }
 
         [Required]
