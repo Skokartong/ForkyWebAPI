@@ -235,6 +235,7 @@ namespace ForkyWebAPI.Services
 
             return tables.Select(t => new ViewTableDTO
             {
+                Id = t.Id,
                 TableNumber = t.TableNumber,
                 AmountOfSeats = t.AmountOfSeats,
                 FK_RestaurantId = t.FK_RestaurantId

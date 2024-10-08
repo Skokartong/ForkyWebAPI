@@ -61,7 +61,7 @@ namespace ForkyWebAPI.Controllers
 
         [HttpGet]
         [Route("/viewbooking/{bookingId}")]
-        public async Task<ActionResult<Booking?>> GetBookingById(int bookingId)
+        public async Task<ActionResult<ViewBookingDTO?>> GetBookingById(int bookingId)
         {
             var booking = await _bookingService.GetBookingByIdAsync(bookingId);
             if (booking == null)

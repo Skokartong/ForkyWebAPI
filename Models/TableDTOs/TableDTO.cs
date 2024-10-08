@@ -11,6 +11,5 @@ namespace ForkyWebAPI.Models.TableDTOs
 
         [ForeignKey("Restaurant")]
         public int FK_RestaurantId { get; set; }
-        public virtual Restaurant Restaurant { get; set; }
     }
 }

@@ -35,14 +35,6 @@ namespace ForkyWebAPI.Services
             var availableTables = await CheckAvailabilityAsync(availabilityCheck);
             var selectedTable = availableTables.First();
 
-            Console.WriteLine($"SELECTED TABLE: Id: {selectedTable.Id}, Capacity: {selectedTable.AmountOfSeats}, FK_RestaurantId: {selectedTable.FK_RestaurantId}");
-
-            Console.WriteLine($"selectedTable.TableNumber",selectedTable.TableNumber);
-            Console.WriteLine($"selectedTable.FK_RestaurantId",selectedTable.FK_RestaurantId);
-            Console.WriteLine($"selectedTable.Id",selectedTable.Id);
-            Console.WriteLine($"selectedTable.AmountOfSeats", selectedTable.AmountOfSeats);
-
-
             if (selectedTable == null)
             {
                 throw new Exception("No available tables found for the selected time and number of guests.");
@@ -100,7 +92,7 @@ namespace ForkyWebAPI.Services
 
             return new ViewBookingDTO
             {
-                CustomerName = booking.Account?.FirstName + booking.Account?.LastName,
+                CustomerName = booking.Account?.FirstName + " " + booking.Account?.LastName,
                 RestaurantName = booking.Restaurant.RestaurantName,
                 NumberOfGuests = booking.NumberOfGuests,
                 BookingStart = booking.BookingStart,

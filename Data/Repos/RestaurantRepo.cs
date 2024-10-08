@@ -56,11 +56,32 @@ namespace ForkyWebAPI.Data.Repos
 
         public async Task<IEnumerable<Table?>> GetAllTablesAsync()
         {
+            var tables = _context.Tables.Include(t => t.Restaurant).Select(t => new
+            {
+                t.Id,
+                t.Restaurant.RestaurantName,
+                t.TableNumber,
+                t.AmountOfSeats,
+                t.FK_RestaurantId,
+            });
+
             return await _context.Tables.ToListAsync();
         }
         
         public async Task<IEnumerable<Menu?>> GetAllMenusAsync()
         {
+            var menus = _context.Menus.Include(m => m.Restaurant).Select(m => new
+            {
+                m.Id,
+                m.Restaurant.RestaurantName,
+                m.NameOfDish,
+                m.Drink,
+                m.IsAvailable,
+                m.Ingredients,
+                m.Price,
+                m.FK_RestaurantId
+            });
+
             return await _context.Menus.ToListAsync();
         }
 

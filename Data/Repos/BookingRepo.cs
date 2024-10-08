@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using ForkyWebAPI.Data.Repos.IRepos;
+using Microsoft.Identity.Client;
 
 namespace ForkyWebAPI.Data.Repos
 {
@@ -71,6 +72,7 @@ namespace ForkyWebAPI.Data.Repos
         {
             return await _context.Bookings
                 .Where(b => b.FK_AccountId == accountId)
+                .Include(b => b.Account)
                 .Include(b => b.Table)   
                 .Include(b => b.Restaurant) 
                 .ToListAsync();
