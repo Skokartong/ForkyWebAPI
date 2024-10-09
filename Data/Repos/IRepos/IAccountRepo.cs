@@ -6,8 +6,8 @@ namespace ForkyWebAPI.Data.Repos.IRepos
     {
         // ADD, DELET, UPDATE ACCOUNTS
         Task AddAccountAsync(Account account);
-        Task DeleteAccountAsync(int accountId);
-        Task UpdateAccountAsync(int accountId, Account updatedAccount);
+        Task DeleteAccountAsync(Account account);
+        Task UpdateAccountAsync(Account updatedAccount);
 
         // GET ACCOUNTS
         Task<List<Account>> GetAllAccountsAsync();

@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using ForkyWebAPI.Data.Repos.IRepos;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace ForkyWebAPI.Data.Repos
 {
@@ -22,32 +23,16 @@ namespace ForkyWebAPI.Data.Repos
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteAccountAsync(int accountId)
+        public async Task DeleteAccountAsync(Account account)
         {
-            var account = await _context.Accounts.FindAsync(accountId);
-            if (account != null)
-            {
                 _context.Accounts.Remove(account);
                 await _context.SaveChangesAsync();
-            }
         }
 
-        public async Task UpdateAccountAsync(int accountId, Account updatedAccount)
+        public async Task UpdateAccountAsync(Account updatedAccount)
         {
-            var account = await _context.Accounts.FindAsync(accountId);
-            if (account != null)
-            {
-                account.FirstName = updatedAccount.FirstName;
-                account.LastName = updatedAccount.LastName;
-                account.Phone = updatedAccount.Phone;
-                account.Address = updatedAccount.Address;
-                account.Email = updatedAccount.Email;
-                account.UserName = updatedAccount.UserName;
-                account.PasswordHash = updatedAccount.PasswordHash; 
-                account.Role = updatedAccount.Role;
-
-                await _context.SaveChangesAsync();
-            }
+            _context.Accounts.Update(updatedAccount);
+            await _context.SaveChangesAsync();
         }
 
         public async Task<List<Account>> GetAllAccountsAsync()
