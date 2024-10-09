@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using ForkyWebAPI.Data.Repos.IRepos;
+using Microsoft.Identity.Client;
 
 namespace ForkyWebAPI.Data.Repos
 {
@@ -16,39 +17,94 @@ namespace ForkyWebAPI.Data.Repos
             _context = context;
         }
 
+        //GET BY ID
+        public async Task<Restaurant?> GetRestaurantByIdAsync(int restaurantId)
+        {
+            return await _context.Restaurants
+                .FirstOrDefaultAsync(a => a.Id == restaurantId);
+        }
+
+        public async Task<Menu?> GetDishByIdAsync(int menuId)
+        {
+            return await _context.Menus
+                .FirstOrDefaultAsync(a => a.Id == menuId);
+        }
+
+        public async Task<Table?> GetTableByIdAsync(int tableId)
+        {
+            return await _context.Tables
+                .FirstOrDefaultAsync(t => t.Id == tableId);
+        }
+
+        public async Task<IEnumerable<Table?>> GetTablesByRestaurantIdAsync(int restaurantId)
+        {
+            return await _context.Tables.Where(t => t.FK_RestaurantId == restaurantId).ToListAsync();
+        }
+
+        public async Task<bool> GetAvailableMenuItemAsync(int menuId)
+        {
+            var menuItem = await _context.Menus.FindAsync(menuId);
+            return menuItem?.IsAvailable ?? false;
+        }
+
+        // ADD OBJECT
         public async Task AddRestaurantAsync(Restaurant restaurant)
         {
             await _context.Restaurants.AddAsync(restaurant);
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteRestaurantAsync(int restaurantId)
+        public async Task AddTableAsync(Table table)
         {
-            var restaurant = await _context.Restaurants.FindAsync(restaurantId);
-            if (restaurant != null)
-            {
-                _context.Restaurants.Remove(restaurant);
-                await _context.SaveChangesAsync();
-            }
-        }
-        public async Task UpdateRestaurantAsync(int restaurantId, Restaurant updatedRestaurant)
-        {
-            var restaurant = await _context.Restaurants.FindAsync(restaurantId);
-            if (restaurant != null)
-            {
-                restaurant.RestaurantName = updatedRestaurant.RestaurantName;
-                restaurant.TypeOfRestaurant = updatedRestaurant.TypeOfRestaurant;
-                restaurant.AdditionalInformation = updatedRestaurant.AdditionalInformation;
-                restaurant.Location = updatedRestaurant.Location;
-                await _context.SaveChangesAsync();
-            }
+            await _context.Tables.AddAsync(table);
+            await _context.SaveChangesAsync();
         }
 
-        public async Task<Restaurant?> SearchRestaurantAsync(int restaurantId)
+        public async Task AddDishOrDrinkAsync(Menu menu)
         {
-            return await _context.Restaurants.FindAsync(restaurantId);
+            await _context.Menus.AddAsync(menu);
+            await _context.SaveChangesAsync();
         }
 
+        // DELETE OBJECT
+        public async Task DeleteRestaurantAsync(Restaurant restaurant)
+        {
+            _context.Restaurants.Remove(restaurant);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task DeleteTableAsync(Table table)
+        {
+            _context.Tables.Remove(table);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task DeleteDishOrDrinkAsync(Menu menu)
+        {
+            _context.Menus.Remove(menu);
+            await _context.SaveChangesAsync();
+        }
+
+        // UPDATE OBJECT
+        public async Task UpdateTableAsync(Table table)
+        {
+            _context.Tables.Update(table);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateRestaurantAsync(Restaurant updatedRestaurant)
+        {
+            _context.Restaurants.Update(updatedRestaurant);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateDishOrDrinkAsync(Menu updatedMenu)
+        {
+            _context.Menus.Update(updatedMenu);
+            await _context.SaveChangesAsync();
+        }
+
+        // GET ALL OBJECTS
         public async Task<IEnumerable<Restaurant?>> GetAllRestaurantsAsync()
         {
             return await _context.Restaurants.ToListAsync();
@@ -67,7 +123,7 @@ namespace ForkyWebAPI.Data.Repos
 
             return await _context.Tables.ToListAsync();
         }
-        
+
         public async Task<IEnumerable<Menu?>> GetAllMenusAsync()
         {
             var menus = _context.Menus.Include(m => m.Restaurant).Select(m => new
@@ -85,89 +141,20 @@ namespace ForkyWebAPI.Data.Repos
             return await _context.Menus.ToListAsync();
         }
 
-        public async Task<IEnumerable<Table?>> GetTablesByRestaurantIdAsync(int restaurantId)
-        {
-            return await _context.Tables.Where(t => t.FK_RestaurantId == restaurantId).ToListAsync();
-        }
-
-        public async Task AddTableAsync(Table table)
-        {
-            await _context.Tables.AddAsync(table);
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task DeleteTableAsync(int tableId)
-        {
-            var table = await _context.Tables.FindAsync(tableId);
-            if (table != null)
-            {
-                _context.Tables.Remove(table);
-                await _context.SaveChangesAsync();
-            }
-        }
-
-        public async Task UpdateTableAsync(int tableId, Table updatedTable)
-        {
-            var table = await _context.Tables.FindAsync(tableId);
-            if (table != null)
-            {
-                table.TableNumber = updatedTable.TableNumber;
-                table.AmountOfSeats = updatedTable.AmountOfSeats;
-                table.FK_RestaurantId = updatedTable.FK_RestaurantId;
-                await _context.SaveChangesAsync();
-            }
-        }
-
         public async Task<IEnumerable<Table?>> GetAvailableTablesAsync(int restaurantId, DateTime startTime, DateTime endTime, int numberOfGuests)
         {
-                return await _context.Tables
-        .Where(t => t.FK_RestaurantId == restaurantId &&
-                    t.AmountOfSeats >= numberOfGuests &&
-                    !t.Bookings.Any(r => r.BookingStart < endTime && r.BookingEnd > startTime))
-        .ToListAsync();
+            return await _context.Tables
+                .Where(t => t.FK_RestaurantId == restaurantId &&
+                t.AmountOfSeats >= numberOfGuests &&
+                !t.Bookings.Any(r => r.BookingStart < endTime && r.BookingEnd > startTime))
+                .ToListAsync();
         }
 
-        public async Task AddDishOrDrinkAsync(Menu menu)
-        {
-            await _context.Menus.AddAsync(menu);
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task DeleteDishOrDrinkAsync(int menuId)
-        {
-            var menuItem = await _context.Menus.FindAsync(menuId);
-            if (menuItem != null)
-            {
-                _context.Menus.Remove(menuItem);
-                await _context.SaveChangesAsync();
-            }
-        }
-
-        public async Task UpdateDishOrDrinkAsync(int menuId, Menu updateMenu)
-        {
-            var menuItem = await _context.Menus.FindAsync(menuId);
-            if (menuItem != null)
-            {
-                menuItem.NameOfDish = updateMenu.NameOfDish;
-                menuItem.Drink = updateMenu.Drink;
-                menuItem.IsAvailable = updateMenu.IsAvailable;
-                menuItem.Ingredients = updateMenu.Ingredients;
-                menuItem.Price = updateMenu.Price;
-                await _context.SaveChangesAsync();
-            }
-        }
-
-        public async Task<IEnumerable<Menu?>> SeeMenuAsync(int restaurantId)
+        public async Task<IEnumerable<Menu?>> GetMenuAsync(int restaurantId)
         {
             return await _context.Menus
                 .Where(m => m.FK_RestaurantId == restaurantId)
                 .ToListAsync();
-        }
-
-        public async Task<bool> GetAvailableMenuItemAsync(int menuId)
-        {
-            var menuItem = await _context.Menus.FindAsync(menuId);
-            return menuItem?.IsAvailable ?? false;
         }
     }
 }

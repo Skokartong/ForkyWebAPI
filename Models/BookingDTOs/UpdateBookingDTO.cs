@@ -2,7 +2,7 @@
 
 namespace ForkyWebAPI.Models.BookingDTOs
 {
-    public class NewBookingDTO
+    public class UpdateBookingDTO
     {
         public int NumberOfGuests { get; set; }
         public DateTime BookingStart { get; set; }
@@ -10,6 +10,8 @@ namespace ForkyWebAPI.Models.BookingDTOs
         public string? Message { get; set; }
         [ForeignKey("Restaurant")]
         public int FK_RestaurantId { get; set; }
+        [ForeignKey("Table")]
+        public int FK_TableId { get; }
         [ForeignKey("Account")]
         public int FK_AccountId { get; set; }
     }

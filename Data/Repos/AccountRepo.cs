@@ -43,7 +43,7 @@ namespace ForkyWebAPI.Data.Repos
                 account.Address = updatedAccount.Address;
                 account.Email = updatedAccount.Email;
                 account.UserName = updatedAccount.UserName;
-                account.PasswordHash = updatedAccount.PasswordHash; // Be cautious with this, hashing should happen on password input
+                account.PasswordHash = updatedAccount.PasswordHash; 
                 account.Role = updatedAccount.Role;
 
                 await _context.SaveChangesAsync();

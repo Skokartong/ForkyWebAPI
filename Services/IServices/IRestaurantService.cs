@@ -20,8 +20,11 @@ namespace ForkyWebAPI.Services.IServices
         Task UpdateDishOrDrinkAsync(int menuId, UpdateMenuDTO updateMenuDTO);
 
         Task<ViewRestaurantDTO?> GetRestaurantByIdAsync(int restaurantId);
+        Task<ViewMenuDTO?> GetDishByIdAsync(int menuId);
+        Task<ViewTableDTO?> GetTableByIdAsync(int tableId);
+
         Task<IEnumerable<ViewTableDTO?>> GetTablesByRestaurantIdAsync(int restaurantId);
-        Task<IEnumerable<ViewMenuDTO?>> SeeMenuAsync(int restaurantId);
+        Task<IEnumerable<ViewMenuDTO?>> GetMenuByRestaurantIdAsync(int restaurantId);
 
         Task<IEnumerable<ViewRestaurantDTO?>> GetAllRestaurantsAsync();
         Task<IEnumerable<ViewMenuDTO?>> GetAllMenusAsync();

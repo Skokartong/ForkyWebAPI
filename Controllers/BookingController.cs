@@ -46,7 +46,7 @@ namespace ForkyWebAPI.Controllers
 
         [HttpPut]
         [Route("/updatebooking/{bookingId}")]
-        public async Task<IActionResult> UpdateBooking(int bookingId, [FromBody] NewBookingDTO updateBookingDTO)
+        public async Task<IActionResult> UpdateBooking(int bookingId, [FromBody] UpdateBookingDTO updateBookingDTO)
         {
             try
             {
@@ -75,7 +75,7 @@ namespace ForkyWebAPI.Controllers
         [Route("/viewbookings")]
         public async Task<ActionResult<IEnumerable<ViewBookingDTO>>> ViewAllBookings()
         {
-            var bookings = await _bookingService.ViewAllBookingsAsync();
+            var bookings = await _bookingService.GetAllBookingsAsync();
             return Ok(bookings);
         }
 
@@ -83,7 +83,7 @@ namespace ForkyWebAPI.Controllers
         [Route("/viewbookings/{accountId}")]
         public async Task<ActionResult<IEnumerable<ViewBookingDTO>>> GetBookingsByAccount(int accountId)
         {
-            var bookings = await _bookingService.GetBookingsByAccountAsync(accountId);
+            var bookings = await _bookingService.GetBookingsByAccountIdAsync(accountId);
             return Ok(bookings);
         }
 

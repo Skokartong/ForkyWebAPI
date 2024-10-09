@@ -5,7 +5,6 @@ namespace ForkyWebAPI.Models.MenuDTOs
 {
     public class UpdateMenuDTO
     {
-        public int Id { get; set; }
         [Required]
         [MaxLength(30)]
         public string NameOfDish { get; set; }

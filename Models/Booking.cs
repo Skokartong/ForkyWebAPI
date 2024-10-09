@@ -8,23 +8,23 @@ namespace ForkyWebAPI.Models
         [Key]
         public int Id { get; set; }
         [Required]
-        public int NumberOfGuests { get; set; }
+        public required int NumberOfGuests { get; set; }
         [Required]
-        public DateTime BookingStart { get; set; }
+        public required DateTime BookingStart { get; set; }
         [Required]
-        public DateTime BookingEnd { get; set; }
+        public required DateTime BookingEnd { get; set; }
         public string? Message { get; set; }
 
         [ForeignKey("Account")]
-        public int FK_AccountId { get; set; }
-        public virtual Account Account { get; set; }
+        public required int FK_AccountId { get; set; }
+        public virtual Account? Account { get; set; }
 
         [ForeignKey("Table")]
-        public int FK_TableId { get; set; }
-        public virtual Table Table { get; set; }
+        public required int FK_TableId { get; set; }
+        public virtual Table? Table { get; set; }
 
         [ForeignKey("Restaurant")]
-        public int FK_RestaurantId { get; set; }
-        public virtual Restaurant Restaurant { get; set; }
+        public required int FK_RestaurantId { get; set; }
+        public virtual Restaurant? Restaurant { get; set; }
     }
 }
