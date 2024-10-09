@@ -18,7 +18,6 @@ namespace ForkyWebAPI.Data.Repos
         }
 
         //GET BY ID
-
         public async Task<Restaurant?> GetRestaurantByIdAsync(int restaurantId)
         {
             return await _context.Restaurants
