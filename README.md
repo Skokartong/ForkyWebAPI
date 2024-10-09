@@ -8,18 +8,18 @@ The system is designed around several core services, which are injected into con
 ## Key Features: ##
 
     JWT Authentication: Secure API access using JSON Web Tokens (JWT).
-    ** Account Management: ** Register, login, update, view, and delete user accounts.
-    **Restaurant Management:** Create, update, delete, and view restaurants, menus, and tables.
+    Account Management: Register, login, update, view, and delete user accounts.
+    Restaurant Management: Create, update, delete, and view restaurants, menus, and tables.
     Booking System: Book, update, delete, and view restaurant bookings.
     CORS Support: Cross-Origin Resource Sharing policies for different client apps.
-    Swagger UI: Documentation and testing tool available in development mode.
+    Swagger UI: Documentation and testing tool available in development mode. 
 
-API Design
-Authentication and Authorization
+## API Design ##
+*Authentication and Authorization*
 
-The API uses JWT Authentication to secure endpoints. When users log in, a JWT token is generated and sent back, which must be used to authenticate subsequent requests. The token contains claims that store user information like roles and name, enabling role-based access control.
+# The API uses JWT Authentication to secure endpoints. When users log in, a JWT token is generated and sent back, which must be used to authenticate subsequent requests. The token contains claims that store user information like roles and name, enabling role-based access control. #
 
-Key Security Configurations:
+*Key Security Configurations:*
 
     Issuer: Verifies that the token is issued by a trusted source.
     Audience: Ensures the token is being used by an appropriate consumer.
