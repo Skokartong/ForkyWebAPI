@@ -17,7 +17,7 @@ The system is designed around several core services, which are injected into con
 ## API Design ##
 *Authentication and Authorization*
 
-# The API uses JWT Authentication to secure endpoints. When users log in, a JWT token is generated and sent back, which must be used to authenticate subsequent requests. The token contains claims that store user information like roles and name, enabling role-based access control. #
+### The API uses JWT Authentication to secure endpoints. When users log in, a JWT token is generated and sent back, which must be used to authenticate subsequent requests. The token contains claims that store user information like roles and name, enabling role-based access control. ###
 
 *Key Security Configurations:*
 
