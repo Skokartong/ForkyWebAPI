@@ -7,6 +7,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Org.BouncyCastle.Crypto.Generators;
+using ForkyWebAPI.Data.Repos;
 
 namespace ForkyWebAPI.Services
 {
@@ -59,7 +60,13 @@ namespace ForkyWebAPI.Services
 
         public async Task DeleteAccountAsync(int accountId)
         {
-            await _accountRepo.DeleteAccountAsync(accountId);
+            var existingAccount = await _accountRepo.GetAccountByIdAsync(accountId);
+            if (existingAccount == null)
+            {
+                throw new KeyNotFoundException("Account not found or is unavailable.");
+            }
+
+            await _accountRepo.DeleteAccountAsync(existingAccount);
         }
 
         public async Task UpdateAccountAsync(int accountId, UpdateAccountDTO accountDTO)
@@ -78,7 +85,7 @@ namespace ForkyWebAPI.Services
                     existingAccount.PasswordHash = BCrypt.Net.BCrypt.HashPassword(accountDTO.Password);
                 }
 
-                await _accountRepo.UpdateAccountAsync(accountId, existingAccount);
+                await _accountRepo.UpdateAccountAsync(existingAccount);
             }
         }
 
