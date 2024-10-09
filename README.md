@@ -1,5 +1,5 @@
-Forky Web API - README
-Overview
+###Forky Web API - README###
+*Overview*
 
 The Forky Web API is a RESTful web service designed to support restaurant booking and management functionality. This API provides several key features such as account management (registration, login, and deletion), restaurant and menu management, table management, and booking functionalities. It is built using ASP.NET Core and employs JWT-based authentication for secure access control.
 
