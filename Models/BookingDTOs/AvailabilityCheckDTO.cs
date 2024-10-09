@@ -4,8 +4,6 @@ namespace ForkyWebAPI.Models.BookingDTOs
 {
     public class AvailabilityCheckDTO
     {
-        //[ForeignKey("Table")]
-        //public int FK_TableId { get; }
 
         [ForeignKey("Restaurant")]
         public int FK_RestaurantId { get; set; }

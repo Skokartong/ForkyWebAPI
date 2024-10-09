@@ -1,4 +1,5 @@
-﻿using ForkyWebAPI.Models.MenuDTOs;
+﻿using ForkyWebAPI.Models;
+using ForkyWebAPI.Models.MenuDTOs;
 using ForkyWebAPI.Models.RestaurantDTOs;
 using ForkyWebAPI.Models.TableDTOs;
 using ForkyWebAPI.Services.IServices;
@@ -88,11 +89,24 @@ namespace ForkyWebAPI.Controllers
 
         [HttpGet]
         [Route("/viewmenu/{restaurantId}")]
-        public async Task<ActionResult<IEnumerable<ViewMenuDTO>>> SeeMenu(int restaurantId)
+        public async Task<ActionResult<IEnumerable<ViewMenuDTO>>> GetMenu(int restaurantId)
         {
-            var menu = await _restaurantService.SeeMenuAsync(restaurantId);
+            var menu = await _restaurantService.GetMenuByRestaurantIdAsync(restaurantId);
             return Ok(menu);
         }
+
+        [HttpGet]
+        [Route("/viewmenuitem/{menuId}")]
+        public async Task<ActionResult<ViewMenuDTO>> GetMenuItemById(int menuId)
+        {
+            var menuItem = await _restaurantService.GetDishByIdAsync(menuId);
+            if (menuItem == null)
+            {
+                return NotFound("Menu item not found");
+            }
+            return Ok(menuItem);
+        }
+
 
         [HttpPost]
         [Route("/addmenuitem")]
@@ -140,6 +154,18 @@ namespace ForkyWebAPI.Controllers
         }
 
         [HttpGet]
+        [Route("/viewtable/{tableId}")]
+        public async Task<ActionResult<ViewTableDTO>> GetTableById(int tableId)
+        {
+            var table = await _restaurantService.GetTableByIdAsync(tableId);
+            if (table == null)
+            {
+                return NotFound("Menu item not found");
+            }
+            return Ok(table);
+        }
+
+        [HttpGet]
         [Route("/viewtables")]
         public async Task<ActionResult<IEnumerable<ViewTableDTO>>> ViewAllTables()
         {
@@ -154,7 +180,7 @@ namespace ForkyWebAPI.Controllers
             var menus = await _restaurantService.GetAllMenusAsync();
             return Ok(menus);
         }
-      
+
         [HttpGet]
         [Route("/viewtables/{restaurantId}")]
         public async Task<ActionResult<IEnumerable<ViewTableDTO>>> ViewTables(int restaurantId)
@@ -163,10 +189,10 @@ namespace ForkyWebAPI.Controllers
 
             if (tables == null || !tables.Any())
             {
-                return NoContent(); 
+                return NoContent();
             }
 
-            return Ok(tables); 
+            return Ok(tables);
         }
 
         [HttpPost]
@@ -174,15 +200,15 @@ namespace ForkyWebAPI.Controllers
         public async Task<IActionResult> AddTable([FromBody] NewTableDTO newTableDTO)
         {
             await _restaurantService.AddTableAsync(newTableDTO);
-            return Created("", new {message = "Table created successfully"}); 
+            return Created("", new { message = "Table created successfully" });
         }
 
         [HttpPut]
         [Route("/updatetable/{tableId}")]
-        public async Task<IActionResult> UpdateTable(int tableId,[FromBody] UpdateTableDTO updateTableDTO)
+        public async Task<IActionResult> UpdateTable(int tableId, [FromBody] UpdateTableDTO updateTableDTO)
         {
             await _restaurantService.UpdateTableAsync(tableId, updateTableDTO);
-            return NoContent(); 
+            return NoContent();
         }
 
         [HttpDelete]
@@ -190,7 +216,7 @@ namespace ForkyWebAPI.Controllers
         public async Task<IActionResult> DeleteTable(int tableId)
         {
             await _restaurantService.DeleteTableAsync(tableId);
-            return NoContent(); 
+            return NoContent();
         }
     }
 }

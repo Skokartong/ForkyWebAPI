@@ -4,11 +4,14 @@ namespace ForkyWebAPI.Data.Repos.IRepos
 {
     public interface IBookingRepo
     {
+        // ADD, DELETE, UPDATE BOOKINGS
         Task AddBookingAsync(Booking booking);
-        Task DeleteBookingAsync(int bookingId);
-        Task UpdateBookingAsync(Booking updateBooking);
+        Task DeleteBookingAsync(Booking booking);
+        Task UpdateBookingAsync(Booking booking);
+
+        // GET BOOKINGS
         Task<Booking?> GetBookingByIdAsync(int bookingId);
-        Task<IEnumerable<Booking?>> ViewAllBookingsAsync();
-        Task<IEnumerable<Booking?>> GetBookingsByAccountAsync(int accountId);
+        Task<IEnumerable<Booking?>> GetAllBookingsAsync();
+        Task<IEnumerable<Booking?>> GetBookingsByAccountIdAsync(int accountId);
     }
 }

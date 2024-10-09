@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using ForkyWebAPI.Models.MenuDTOs;
 using ForkyWebAPI.Models.TableDTOs;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace ForkyWebAPI.Services
 {
@@ -19,6 +20,7 @@ namespace ForkyWebAPI.Services
             _restaurantRepo = restaurantRepo;
         }
 
+        // ADD ACTIONS FOR RESTAURANTS, MENUS
         public async Task AddRestaurantAsync(AddRestaurantDTO addRestaurantDTO)
         {
             if (addRestaurantDTO == null)
@@ -35,100 +37,6 @@ namespace ForkyWebAPI.Services
             };
 
             await _restaurantRepo.AddRestaurantAsync(restaurant);
-        }
-
-        public async Task DeleteRestaurantAsync(int restaurantId)
-        {
-            var restaurant = await _restaurantRepo.SearchRestaurantAsync(restaurantId);
-            if (restaurant == null)
-            {
-                throw new KeyNotFoundException("Restaurant not found.");
-            }
-
-            await _restaurantRepo.DeleteRestaurantAsync(restaurantId);
-        }
-
-        public async Task UpdateRestaurantAsync(int restaurantId, UpdateRestaurantDTO updateRestaurantDTO)
-        {
-            if (updateRestaurantDTO == null)
-            {
-                throw new ArgumentNullException(nameof(updateRestaurantDTO), "Updated restaurant cannot be null.");
-            }
-
-            var restaurant = await _restaurantRepo.SearchRestaurantAsync(restaurantId);
-            if (restaurant == null)
-            {
-                throw new KeyNotFoundException("Restaurant not found.");
-            }
-
-            restaurantId = updateRestaurantDTO.Id;
-            restaurant.RestaurantName = updateRestaurantDTO.RestaurantName;
-            restaurant.TypeOfRestaurant = updateRestaurantDTO.TypeOfRestaurant;
-            restaurant.Location = updateRestaurantDTO.Location;
-            restaurant.AdditionalInformation = updateRestaurantDTO.AdditionalInformation;
-
-            await _restaurantRepo.UpdateRestaurantAsync(restaurantId, restaurant);
-        }
-
-        public async Task<ViewRestaurantDTO?> GetRestaurantByIdAsync(int restaurantId)
-        {
-            var restaurant = await _restaurantRepo.SearchRestaurantAsync(restaurantId);
-            if (restaurant == null)
-            {
-                throw new KeyNotFoundException("Restaurant not found.");
-            }
-
-            var restaurantDTO = new ViewRestaurantDTO
-            {
-                Id = restaurantId,
-                RestaurantName = restaurant.RestaurantName,
-                TypeOfRestaurant = restaurant.TypeOfRestaurant,
-                Location = restaurant.Location,
-                AdditionalInformation = restaurant.AdditionalInformation,
-            };
-
-            return restaurantDTO;
-        }
-
-        public async Task<IEnumerable<ViewRestaurantDTO?>> GetAllRestaurantsAsync()
-        {
-            var restaurants = await _restaurantRepo.GetAllRestaurantsAsync();
-            var restaurantDTOs = new List<ViewRestaurantDTO>();
-
-            foreach (var restaurant in restaurants)
-            {
-                restaurantDTOs.Add(new ViewRestaurantDTO
-                {
-                    Id = restaurant.Id,
-                    RestaurantName = restaurant.RestaurantName,
-                    TypeOfRestaurant = restaurant.TypeOfRestaurant,
-                    Location = restaurant.Location,
-                    AdditionalInformation = restaurant.AdditionalInformation
-                });
-            }
-
-            return restaurantDTOs;
-        }
-
-        public async Task<IEnumerable<ViewMenuDTO?>> SeeMenuAsync(int restaurantId)
-        {
-            var menus = await _restaurantRepo.SeeMenuAsync(restaurantId);
-            var menuDTOs = new List<ViewMenuDTO>();
-
-            foreach (var menu in menus)
-            {
-                menuDTOs.Add(new ViewMenuDTO
-                {
-                    Id = menu.Id,
-                    NameOfDish = menu.NameOfDish,
-                    Drink = menu.Drink,
-                    IsAvailable = menu.IsAvailable,
-                    Ingredients = menu.Ingredients,
-                    Price = menu.Price,
-                });
-            }
-
-            return menuDTOs;
         }
 
         public async Task AddDishOrDrinkAsync(AddDishDTO dishDTO)
@@ -151,15 +59,49 @@ namespace ForkyWebAPI.Services
             await _restaurantRepo.AddDishOrDrinkAsync(menu);
         }
 
-        public async Task DeleteDishOrDrinkAsync(int menuId)
+        public async Task AddTableAsync(NewTableDTO newTableDTO)
         {
-            var menuItemExists = await _restaurantRepo.GetAvailableMenuItemAsync(menuId);
-            if (!menuItemExists)
+            if (newTableDTO == null)
             {
-                throw new KeyNotFoundException("Menu item not found or is unavailable.");
+                throw new ArgumentNullException(nameof(newTableDTO), "Table cannot be null.");
             }
 
-            await _restaurantRepo.DeleteDishOrDrinkAsync(menuId);
+            var table = new Models.Table
+            {
+                TableNumber = newTableDTO.TableNumber,
+                AmountOfSeats = newTableDTO.AmountOfSeats,
+                FK_RestaurantId = newTableDTO.FK_RestaurantId,
+            };
+
+            await _restaurantRepo.AddTableAsync(table);
+        }
+
+
+        // UPDATE ACTIONS 
+        public async Task UpdateRestaurantAsync(int restaurantId, UpdateRestaurantDTO updateRestaurantDTO)
+        {
+            if (updateRestaurantDTO == null)
+            {
+                throw new ArgumentNullException(nameof(updateRestaurantDTO), "Updated restaurant cannot be null.");
+            }
+
+            var existingRestaurant = await _restaurantRepo.GetRestaurantByIdAsync(restaurantId);
+
+            if (existingRestaurant == null)
+            {
+                throw new KeyNotFoundException("Menu item not found.");
+            }
+
+            var updatedRestaurant = new Restaurant
+            {
+                Id = restaurantId,
+                RestaurantName = updateRestaurantDTO.RestaurantName,
+                TypeOfRestaurant = updateRestaurantDTO.TypeOfRestaurant,
+                Location = updateRestaurantDTO.Location,
+                AdditionalInformation = updateRestaurantDTO.AdditionalInformation,
+            };
+
+            await _restaurantRepo.UpdateRestaurantAsync(updatedRestaurant);
         }
 
         public async Task UpdateDishOrDrinkAsync(int menuId, UpdateMenuDTO updateMenuDTO)
@@ -169,7 +111,7 @@ namespace ForkyWebAPI.Services
                 throw new ArgumentNullException(nameof(updateMenuDTO), "Updated menu item cannot be null.");
             }
 
-            var existingMenuItem = await _restaurantRepo.SeeMenuAsync(menuId);
+            var existingMenuItem = await _restaurantRepo.GetDishByIdAsync(menuId);
             if (existingMenuItem == null)
             {
                 throw new KeyNotFoundException("Menu item not found.");
@@ -182,11 +124,154 @@ namespace ForkyWebAPI.Services
                 Drink = updateMenuDTO.Drink,
                 Ingredients = updateMenuDTO.Ingredients,
                 IsAvailable = updateMenuDTO.IsAvailable,
-                Price = updateMenuDTO.Price, 
-                FK_RestaurantId = updateMenuDTO.FK_RestaurantId 
+                Price = updateMenuDTO.Price,
+                FK_RestaurantId = updateMenuDTO.FK_RestaurantId
             };
 
-            await _restaurantRepo.UpdateDishOrDrinkAsync(menuId, updatedMenuItem);
+            await _restaurantRepo.UpdateDishOrDrinkAsync(updatedMenuItem);
+        }
+
+        public async Task UpdateTableAsync(int tableId, UpdateTableDTO updateTableDTO)
+        {
+            if (updateTableDTO == null)
+            {
+                throw new ArgumentNullException(nameof(updateTableDTO), "Updated table cannot be null");
+            }
+
+            var existingTable = await _restaurantRepo.GetTableByIdAsync(tableId);
+            if (existingTable == null)
+            {
+                throw new KeyNotFoundException("Table not found");
+            }
+
+            var updatedTable = new Models.Table
+            {
+                Id = tableId,
+                TableNumber = updateTableDTO.TableNumber,
+                AmountOfSeats = updateTableDTO.AmountOfSeats,
+                FK_RestaurantId = updateTableDTO.FK_RestaurantId,
+            };
+
+            await _restaurantRepo.UpdateTableAsync(updatedTable);
+        }
+
+        // DELETE ACTIONS
+
+        public async Task DeleteRestaurantAsync(int restaurantId)
+        {
+            var existingRestaurant = await _restaurantRepo.GetRestaurantByIdAsync(restaurantId);
+            if (existingRestaurant == null)
+            {
+                throw new KeyNotFoundException("Restaurant not found.");
+            }
+
+            await _restaurantRepo.DeleteRestaurantAsync(existingRestaurant);
+        }
+
+        public async Task DeleteDishOrDrinkAsync(int menuId)
+        {
+            var existingDish = await _restaurantRepo.GetDishByIdAsync(menuId);
+            if (existingDish == null)
+            {
+                throw new KeyNotFoundException("Menu item not found or is unavailable.");
+            }
+
+            await _restaurantRepo.DeleteDishOrDrinkAsync(existingDish);
+        }
+
+        public async Task DeleteTableAsync(int tableId)
+        {
+            var existingTable = await _restaurantRepo.GetTableByIdAsync(tableId);
+            if (existingTable == null)
+            {
+                throw new KeyNotFoundException("Table not found");
+            }
+
+            await _restaurantRepo.DeleteTableAsync(existingTable);
+        }
+
+        // GET SINGULAR 
+        public async Task<ViewRestaurantDTO?> GetRestaurantByIdAsync(int restaurantId)
+        {
+            var restaurant = await _restaurantRepo.GetRestaurantByIdAsync(restaurantId);
+            if (restaurant == null)
+            {
+                throw new KeyNotFoundException("Restaurant not found.");
+            }
+
+            var restaurantDTO = new ViewRestaurantDTO
+            {
+                Id = restaurantId,
+                RestaurantName = restaurant.RestaurantName,
+                TypeOfRestaurant = restaurant.TypeOfRestaurant,
+                Location = restaurant.Location,
+                AdditionalInformation = restaurant.AdditionalInformation,
+            };
+
+            return restaurantDTO;
+        }
+
+        public async Task<ViewMenuDTO?> GetDishByIdAsync(int menuId)
+        {
+            var menuItem = await _restaurantRepo.GetDishByIdAsync(menuId);
+            if (menuItem == null)
+            {
+                throw new KeyNotFoundException("Restaurant not found.");
+            }
+
+            var menuDTO = new ViewMenuDTO
+            {
+                Id = menuId,
+                NameOfDish = menuItem.NameOfDish,
+                Drink = menuItem.Drink,
+                IsAvailable = menuItem.IsAvailable,
+                Ingredients = menuItem.Ingredients,
+                FK_RestaurantId = menuItem.FK_RestaurantId,
+                Price = menuItem.Price
+            };
+
+            return menuDTO;
+
+        }
+
+        public async Task<ViewTableDTO?> GetTableByIdAsync(int tableId)
+        {
+            var table = await _restaurantRepo.GetTableByIdAsync(tableId);
+            if (table == null)
+            {
+                throw new KeyNotFoundException("Table not found.");
+            }
+
+            var tableDTO = new ViewTableDTO
+            {
+                Id = tableId,
+                AmountOfSeats = table.AmountOfSeats,
+                FK_RestaurantId = table.FK_RestaurantId,
+                TableNumber = table.TableNumber
+            };
+
+            return tableDTO;
+        }
+
+        // GET PLURAL
+        public async Task<IEnumerable<ViewRestaurantDTO?>> GetAllRestaurantsAsync()
+        {
+            var restaurants = await _restaurantRepo.GetAllRestaurantsAsync();
+            var restaurantDTOs = new List<ViewRestaurantDTO>();
+
+            foreach (var restaurant in restaurants)
+            {
+                restaurantDTOs.Add(new ViewRestaurantDTO
+                {
+                    Id = restaurant.Id,
+                    RestaurantName = restaurant.RestaurantName,
+                    TypeOfRestaurant = restaurant.TypeOfRestaurant,
+                    Location = restaurant.Location,
+                    AdditionalInformation = restaurant.AdditionalInformation
+                });
+            }
+
+            return restaurantDTOs;
         }
 
         public async Task<IEnumerable<ViewTableDTO?>> GetAllTablesAsync()
@@ -222,7 +307,31 @@ namespace ForkyWebAPI.Services
                     Drink = menu.Drink,
                     Price = menu.Price,
                     Ingredients = menu.Ingredients,
-                    IsAvailable = menu.IsAvailable
+                    IsAvailable = menu.IsAvailable,
+                    FK_RestaurantId = menu.FK_RestaurantId
+                });
+            }
+
+            return menuDTOs;
+        }
+
+        // GET PLURAL (SPECIFIC), E.G FILTER MENU BASED ON RESTAURANT
+        public async Task<IEnumerable<ViewMenuDTO?>> GetMenuByRestaurantIdAsync(int restaurantId)
+        {
+            var menus = await _restaurantRepo.GetMenuAsync(restaurantId);
+            var menuDTOs = new List<ViewMenuDTO>();
+
+            foreach (var menu in menus)
+            {
+                menuDTOs.Add(new ViewMenuDTO
+                {
+                    Id = menu.Id,
+                    NameOfDish = menu.NameOfDish,
+                    Drink = menu.Drink,
+                    IsAvailable = menu.IsAvailable,
+                    Ingredients = menu.Ingredients,
+                    Price = menu.Price,
+                    FK_RestaurantId = menu.FK_RestaurantId,
                 });
             }
 
@@ -240,36 +349,6 @@ namespace ForkyWebAPI.Services
                 AmountOfSeats = t.AmountOfSeats,
                 FK_RestaurantId = t.FK_RestaurantId
             }).ToList();
-        }
-
-        public async Task AddTableAsync(NewTableDTO newTableDTO)
-        {
-            var table = new Table
-            {
-                TableNumber = newTableDTO.TableNumber,
-                AmountOfSeats = newTableDTO.AmountOfSeats,
-                FK_RestaurantId = newTableDTO.FK_RestaurantId,
-            };
-
-            await _restaurantRepo.AddTableAsync(table);
-        }
-
-        public async Task DeleteTableAsync(int tableId)
-        {
-            await _restaurantRepo.DeleteTableAsync(tableId);
-        }
-
-        public async Task UpdateTableAsync(int tableId, UpdateTableDTO updateTableDTO)
-        {
-            var table = new Table
-            {
-                Id = tableId,
-                TableNumber = updateTableDTO.TableNumber,
-                AmountOfSeats = updateTableDTO.AmountOfSeats,
-                FK_RestaurantId = updateTableDTO.FK_RestaurantId,
-            };
-
-            await _restaurantRepo.UpdateTableAsync(tableId, table);
         }
     }
 }

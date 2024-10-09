@@ -2,7 +2,6 @@
 {
     public class UpdateRestaurantDTO
     {
-        public int Id { get; set; }
         public string RestaurantName { get; set; }
         public string TypeOfRestaurant { get; set; }
         public string Location { get; set; }
