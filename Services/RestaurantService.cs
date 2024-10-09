@@ -156,7 +156,6 @@ namespace ForkyWebAPI.Services
         }
 
         // DELETE ACTIONS
-
         public async Task DeleteRestaurantAsync(int restaurantId)
         {
             var existingRestaurant = await _restaurantRepo.GetRestaurantByIdAsync(restaurantId);
@@ -231,7 +230,6 @@ namespace ForkyWebAPI.Services
             };
 
             return menuDTO;
-
         }
 
         public async Task<ViewTableDTO?> GetTableByIdAsync(int tableId)
