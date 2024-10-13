@@ -114,18 +114,14 @@ namespace ForkyWebAPI.Services
                 throw new KeyNotFoundException("Menu item not found.");
             }
 
-            var updatedMenuItem = new Menu
-            {
-                Id = menuId,
-                NameOfDish = updateMenuDTO.NameOfDish,
-                Drink = updateMenuDTO.Drink,
-                Ingredients = updateMenuDTO.Ingredients,
-                IsAvailable = updateMenuDTO.IsAvailable,
-                Price = updateMenuDTO.Price,
-                FK_RestaurantId = updateMenuDTO.FK_RestaurantId
-            };
+            existingMenuItem.NameOfDish = updateMenuDTO.NameOfDish;
+            existingMenuItem.Drink = updateMenuDTO.Drink;
+            existingMenuItem.Ingredients = updateMenuDTO.Ingredients;
+            existingMenuItem.IsAvailable = updateMenuDTO.IsAvailable;
+            existingMenuItem.Price = updateMenuDTO.Price;
+            existingMenuItem.FK_RestaurantId = updateMenuDTO.FK_RestaurantId;
 
-            await _restaurantRepo.UpdateDishOrDrinkAsync(updatedMenuItem);
+            await _restaurantRepo.UpdateDishOrDrinkAsync(existingMenuItem);
         }
 
         public async Task UpdateTableAsync(int tableId, UpdateTableDTO updateTableDTO)
@@ -141,15 +137,11 @@ namespace ForkyWebAPI.Services
                 throw new KeyNotFoundException("Table not found");
             }
 
-            var updatedTable = new Models.Table
-            {
-                Id = tableId,
-                TableNumber = updateTableDTO.TableNumber,
-                AmountOfSeats = updateTableDTO.AmountOfSeats,
-                FK_RestaurantId = updateTableDTO.FK_RestaurantId,
-            };
+            existingTable.TableNumber = updateTableDTO.TableNumber;
+            existingTable.AmountOfSeats = updateTableDTO.AmountOfSeats;
+            existingTable.FK_RestaurantId = updateTableDTO.FK_RestaurantId;
 
-            await _restaurantRepo.UpdateTableAsync(updatedTable);
+            await _restaurantRepo.UpdateTableAsync(existingTable);
         }
 
         // DELETE ACTIONS
