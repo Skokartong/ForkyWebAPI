@@ -89,20 +89,17 @@ namespace ForkyWebAPI.Services
 
             if (existingRestaurant == null)
             {
-                throw new KeyNotFoundException("Menu item not found.");
+                throw new KeyNotFoundException("Restaurant not found.");
             }
 
-            var updatedRestaurant = new Restaurant
-            {
-                Id = restaurantId,
-                RestaurantName = updateRestaurantDTO.RestaurantName,
-                TypeOfRestaurant = updateRestaurantDTO.TypeOfRestaurant,
-                Location = updateRestaurantDTO.Location,
-                AdditionalInformation = updateRestaurantDTO.AdditionalInformation,
-            };
+            existingRestaurant.RestaurantName = updateRestaurantDTO.RestaurantName;
+            existingRestaurant.TypeOfRestaurant = updateRestaurantDTO.TypeOfRestaurant;
+            existingRestaurant.Location = updateRestaurantDTO.Location;
+            existingRestaurant.AdditionalInformation = updateRestaurantDTO.AdditionalInformation;
 
-            await _restaurantRepo.UpdateRestaurantAsync(updatedRestaurant);
+            await _restaurantRepo.UpdateRestaurantAsync(existingRestaurant);
         }
+
 
         public async Task UpdateDishOrDrinkAsync(int menuId, UpdateMenuDTO updateMenuDTO)
         {
