@@ -53,7 +53,7 @@ namespace ForkyWebAPI.Services
                 CustomerName = $"{booking.Account?.FirstName ?? ""} {booking.Account?.LastName ?? ""}".Trim(),
                 FK_RestaurantId = booking.FK_RestaurantId,
                 RestaurantName = booking.Restaurant?.RestaurantName,
-                TableId = booking.FK_TableId,
+                FK_TableId = booking.FK_TableId,
                 NumberOfGuests = booking.NumberOfGuests,
                 BookingStart = booking.BookingStart,
                 BookingEnd = booking.BookingEnd,
@@ -77,8 +77,8 @@ namespace ForkyWebAPI.Services
                 throw new ArgumentNullException(nameof(updateBookingDTO), "Updated booking information cannot be null.");
             }
 
-            var booking = await _bookingRepo.GetBookingByIdAsync(bookingId) ??
-                throw new KeyNotFoundException($"Booking with ID {bookingId} not found.");
+            var booking = await _bookingRepo.GetBookingByIdAsync(bookingId)
+                ?? throw new KeyNotFoundException($"Booking with ID {bookingId} not found.");
 
             var availabilityCheck = new AvailabilityCheckDTO
             {
@@ -103,7 +103,7 @@ namespace ForkyWebAPI.Services
             booking.Message = updateBookingDTO.Message;
             booking.FK_AccountId = updateBookingDTO.FK_AccountId;
             booking.FK_RestaurantId = updateBookingDTO.FK_RestaurantId;
-            booking.FK_TableId = selectedTable.Id; 
+            booking.FK_TableId = selectedTable.Id;  
 
             await _bookingRepo.UpdateBookingAsync(booking);
         }
@@ -120,7 +120,7 @@ namespace ForkyWebAPI.Services
                 CustomerName = $"{booking.Account?.FirstName ?? ""} {booking.Account?.LastName ?? ""}".Trim(),
                 FK_RestaurantId = booking.FK_RestaurantId,
                 RestaurantName = booking.Restaurant?.RestaurantName,
-                TableId = booking.FK_TableId,
+                FK_TableId = booking.FK_TableId,
                 NumberOfGuests = booking.NumberOfGuests,
                 BookingStart = booking.BookingStart,
                 BookingEnd = booking.BookingEnd,
@@ -149,7 +149,7 @@ namespace ForkyWebAPI.Services
                     CustomerName = $"{b.Account?.FirstName ?? ""} {b.Account?.LastName ?? ""}".Trim(),
                     FK_RestaurantId = b.FK_RestaurantId,
                     RestaurantName = b.Restaurant?.RestaurantName ?? "",
-                    TableId = b.FK_TableId,
+                    FK_TableId = b.FK_TableId,
                     NumberOfGuests = b.NumberOfGuests,
                     BookingStart = b.BookingStart,
                     BookingEnd = b.BookingEnd,
@@ -174,7 +174,7 @@ namespace ForkyWebAPI.Services
                     CustomerName = $"{b.Account?.FirstName ?? ""} {b.Account?.LastName ?? ""}".Trim(),
                     FK_RestaurantId = b.FK_RestaurantId,
                     RestaurantName = b.Restaurant?.RestaurantName ?? "",
-                    TableId = b.FK_TableId,
+                    FK_TableId = b.FK_TableId,
                     NumberOfGuests = b.NumberOfGuests,
                     BookingStart = b.BookingStart,
                     BookingEnd = b.BookingEnd,
