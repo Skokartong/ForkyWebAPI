@@ -77,8 +77,8 @@ namespace ForkyWebAPI.Services
                 throw new ArgumentNullException(nameof(updateBookingDTO), "Updated booking information cannot be null.");
             }
 
-            var booking = await _bookingRepo.GetBookingByIdAsync(bookingId) ??
-                throw new KeyNotFoundException($"Booking with ID {bookingId} not found.");
+            var booking = await _bookingRepo.GetBookingByIdAsync(bookingId)
+                ?? throw new KeyNotFoundException($"Booking with ID {bookingId} not found.");
 
             var availabilityCheck = new AvailabilityCheckDTO
             {
@@ -103,7 +103,7 @@ namespace ForkyWebAPI.Services
             booking.Message = updateBookingDTO.Message;
             booking.FK_AccountId = updateBookingDTO.FK_AccountId;
             booking.FK_RestaurantId = updateBookingDTO.FK_RestaurantId;
-            booking.FK_TableId = selectedTable.Id; 
+            booking.FK_TableId = selectedTable.Id;  
 
             await _bookingRepo.UpdateBookingAsync(booking);
         }
