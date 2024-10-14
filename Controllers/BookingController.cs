@@ -91,11 +91,6 @@ namespace ForkyWebAPI.Controllers
         [Route("/checkavailability")]
         public async Task<ActionResult<IEnumerable<TableDTO>>> CheckAvailability([FromBody] AvailabilityCheckDTO availabilityCheckDTO)
         {
-            Console.WriteLine($"Restaurantid: {availabilityCheckDTO.FK_RestaurantId}");
-            Console.WriteLine($"Starttime: {availabilityCheckDTO.StartTime}");
-            Console.WriteLine($"Endtime: {availabilityCheckDTO.EndTime}");
-            Console.WriteLine($"NumberOfGuests: {availabilityCheckDTO.NumberOfGuests}");
-
             var availableTables = await _bookingService.CheckAvailabilityAsync(availabilityCheckDTO);
             return Ok(availableTables);
         }
