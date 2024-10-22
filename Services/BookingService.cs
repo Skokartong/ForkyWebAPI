@@ -98,7 +98,7 @@ namespace ForkyWebAPI.Services
             var booking = await _bookingRepo.GetBookingByIdAsync(bookingId)
                 ?? throw new KeyNotFoundException($"Booking with ID {bookingId} not found.");
 
-            var availabilityCheck = new AvailabilityCheckDTO
+            var availabilityCheckDTO = new AvailabilityCheckDTO
             {
                 FK_RestaurantId = updateBookingDTO.FK_RestaurantId,
                 StartTime = updateBookingDTO.BookingStart,
@@ -106,7 +106,7 @@ namespace ForkyWebAPI.Services
                 NumberOfGuests = updateBookingDTO.NumberOfGuests
             };
 
-            var availableTables = await CheckAvailabilityAsync(availabilityCheck);
+            var availableTables = await CheckAvailabilityAsync(availabilityCheckDTO);
 
             if (!availableTables.Any())
             {

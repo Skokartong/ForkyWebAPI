@@ -141,14 +141,16 @@ namespace ForkyWebAPI.Data.Repos
             return await _context.Menus.ToListAsync();
         }
 
-        public async Task<IEnumerable<Table?>> GetAvailableTablesAsync(int restaurantId, DateTime startTime, DateTime endTime, int numberOfGuests)
+        public async Task<IEnumerable<Table>> GetAvailableTablesAsync(int restaurantId, DateTime startTime, DateTime endTime, int numberOfGuests)
         {
             return await _context.Tables
-                .Where(t => t.FK_RestaurantId == restaurantId &&
-                t.AmountOfSeats >= numberOfGuests &&
-                !t.Bookings.Any(r => r.BookingStart < endTime && r.BookingEnd > startTime))
+                .Where(t => t.FK_RestaurantId == restaurantId && t.AmountOfSeats >= numberOfGuests &&
+                            !_context.Bookings.Any(b => b.FK_TableId == t.Id &&
+                                                         b.FK_RestaurantId == restaurantId &&
+                                                         (b.BookingStart < endTime && b.BookingEnd > startTime)))
                 .ToListAsync();
         }
+
 
         public async Task<IEnumerable<Menu?>> GetMenuAsync(int restaurantId)
         {
