@@ -32,7 +32,8 @@ namespace ForkyWebAPI.Services
                         FK_RestaurantId = newBookingDTO.FK_RestaurantId,
                         StartTime = newBookingDTO.BookingStart,
                         EndTime = newBookingDTO.BookingEnd,
-                        NumberOfGuests = newBookingDTO.NumberOfGuests
+                        NumberOfGuests = newBookingDTO.NumberOfGuests,
+                        FK_BookingId = null
                     };
 
                     var availableTables = await CheckAvailabilityAsync(availabilityCheck);

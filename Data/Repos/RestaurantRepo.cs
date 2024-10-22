@@ -161,7 +161,7 @@ namespace ForkyWebAPI.Data.Repos
             if (bookingId.HasValue)
             {
                 var currentBooking = await _context.Bookings.FindAsync(bookingId.Value);
-                if (currentBooking != null && currentBooking.FK_TableId != null)
+                if (currentBooking != null && currentBooking?.FK_TableId != null)
                 {
                     var currentTable = await _context.Tables.FindAsync(currentBooking.FK_TableId);
                     if (currentTable != null && currentTable.AmountOfSeats >= numberOfGuests)
