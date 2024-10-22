@@ -103,7 +103,8 @@ namespace ForkyWebAPI.Services
                 FK_RestaurantId = updateBookingDTO.FK_RestaurantId,
                 StartTime = updateBookingDTO.BookingStart,
                 EndTime = updateBookingDTO.BookingEnd,
-                NumberOfGuests = updateBookingDTO.NumberOfGuests
+                NumberOfGuests = updateBookingDTO.NumberOfGuests,
+                FK_BookingId = bookingId
             };
 
             var availableTables = await CheckAvailabilityAsync(availabilityCheckDTO);
@@ -115,6 +116,7 @@ namespace ForkyWebAPI.Services
 
             var selectedTable = availableTables.First();
 
+            booking.Id = bookingId;
             booking.NumberOfGuests = updateBookingDTO.NumberOfGuests;
             booking.BookingStart = updateBookingDTO.BookingStart;
             booking.BookingEnd = updateBookingDTO.BookingEnd;
@@ -206,32 +208,27 @@ namespace ForkyWebAPI.Services
         {
             if (availabilityCheckDTO == null)
             {
-                Console.WriteLine("availabilityCheckDTO=null");
                 throw new ArgumentNullException(nameof(availabilityCheckDTO), "Availability check information cannot be null.");
             }
 
             var availableTables = await _restaurantRepo.GetAvailableTablesAsync(
-            availabilityCheckDTO.FK_RestaurantId,
-            availabilityCheckDTO.StartTime,
-            availabilityCheckDTO.EndTime,
-            availabilityCheckDTO.NumberOfGuests) ??
-                throw new KeyNotFoundException(
-                    "No available tables found for the selected time and number of guests."
-                );
+                availabilityCheckDTO.FK_RestaurantId,
+                availabilityCheckDTO.StartTime,
+                availabilityCheckDTO.EndTime,
+                availabilityCheckDTO.NumberOfGuests,
+                availabilityCheckDTO.FK_BookingId) ?? 
+                throw new KeyNotFoundException("No available tables found for the selected time and number of guests.");
 
-            var availableTableDTOs = availableTables.Select(t =>
+            var availableTableDTOs = availableTables.Select(t => new TableDTO
             {
-                if (t == null) throw new InvalidOperationException("Unexpected null table");
-                return new TableDTO
-                {
-                    Id = t.Id,
-                    TableNumber = t.TableNumber,
-                    AmountOfSeats = t.AmountOfSeats,
-                    FK_RestaurantId = t.FK_RestaurantId
-                };
+                Id = t.Id,
+                TableNumber = t.TableNumber,
+                AmountOfSeats = t.AmountOfSeats,
+                FK_RestaurantId = t.FK_RestaurantId
             });
 
             return availableTableDTOs;
         }
+
     }
 }
