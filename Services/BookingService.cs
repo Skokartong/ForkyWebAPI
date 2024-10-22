@@ -1,8 +1,10 @@
-﻿using ForkyWebAPI.Data.Repos.IRepos;
+﻿using ForkyWebAPI.Data;
+using ForkyWebAPI.Data.Repos.IRepos;
 using ForkyWebAPI.Models;
 using ForkyWebAPI.Models.BookingDTOs;
 using ForkyWebAPI.Models.TableDTOs;
 using ForkyWebAPI.Services.IServices;
+using Microsoft.EntityFrameworkCore;
 
 namespace ForkyWebAPI.Services
 {
@@ -10,56 +12,73 @@ namespace ForkyWebAPI.Services
     {
         private readonly IBookingRepo _bookingRepo;
         private readonly IRestaurantRepo _restaurantRepo;
+        private readonly ForkyContext _context;
 
-        public BookingService(IBookingRepo bookingRepo, IRestaurantRepo restaurantRepo)
+        public BookingService(IBookingRepo bookingRepo, IRestaurantRepo restaurantRepo, ForkyContext context)
         {
             _bookingRepo = bookingRepo;
             _restaurantRepo = restaurantRepo;
+            _context = context;
         }
 
         public async Task<ViewBookingDTO> AddBookingAsync(NewBookingDTO newBookingDTO)
         {
-            var availabilityCheck = new AvailabilityCheckDTO
+            using (var transaction = await _context.Database.BeginTransactionAsync())
             {
-                FK_RestaurantId = newBookingDTO.FK_RestaurantId,
-                StartTime = newBookingDTO.BookingStart,
-                EndTime = newBookingDTO.BookingEnd,
-                NumberOfGuests = newBookingDTO.NumberOfGuests
-            };
+                try
+                {
+                    var availabilityCheck = new AvailabilityCheckDTO
+                    {
+                        FK_RestaurantId = newBookingDTO.FK_RestaurantId,
+                        StartTime = newBookingDTO.BookingStart,
+                        EndTime = newBookingDTO.BookingEnd,
+                        NumberOfGuests = newBookingDTO.NumberOfGuests,
+                        FK_BookingId = null
+                    };
 
-            var availableTables = await CheckAvailabilityAsync(availabilityCheck);
-            var selectedTable = availableTables.First() ??
-                throw new Exception(
-                    "No available tables found for the selected time and number of guests."
-                );
+                    var availableTables = await CheckAvailabilityAsync(availabilityCheck);
+                    var selectedTable = availableTables.First() ??
+                        throw new Exception(
+                            "No available tables found for the selected time and number of guests."
+                        );
 
-            var booking = new Booking
-            {
-                NumberOfGuests = newBookingDTO.NumberOfGuests,
-                BookingStart = newBookingDTO.BookingStart,
-                BookingEnd = newBookingDTO.BookingEnd,
-                Message = newBookingDTO.Message,
-                FK_AccountId = newBookingDTO.FK_AccountId,
-                FK_RestaurantId = newBookingDTO.FK_RestaurantId,
-                FK_TableId = selectedTable.Id
-            };
+                    var booking = new Booking
+                    {
+                        NumberOfGuests = newBookingDTO.NumberOfGuests,
+                        BookingStart = newBookingDTO.BookingStart,
+                        BookingEnd = newBookingDTO.BookingEnd,
+                        Message = newBookingDTO.Message,
+                        FK_AccountId = newBookingDTO.FK_AccountId,
+                        FK_RestaurantId = newBookingDTO.FK_RestaurantId,
+                        FK_TableId = selectedTable.Id
+                    };
 
-            await _bookingRepo.AddBookingAsync(booking);
+                    await _bookingRepo.AddBookingAsync(booking);
 
-            return new ViewBookingDTO
-            {
-                Id = booking.Id,
-                FK_AccountId = booking.FK_AccountId,
-                CustomerName = $"{booking.Account?.FirstName ?? ""} {booking.Account?.LastName ?? ""}".Trim(),
-                FK_RestaurantId = booking.FK_RestaurantId,
-                RestaurantName = booking.Restaurant?.RestaurantName,
-                FK_TableId = booking.FK_TableId,
-                NumberOfGuests = booking.NumberOfGuests,
-                BookingStart = booking.BookingStart,
-                BookingEnd = booking.BookingEnd,
-                Message = booking.Message ?? "",
-                OperationResult = "Created"
-            };
+                    await transaction.CommitAsync();
+
+                    return new ViewBookingDTO
+                    {
+                        Id = booking.Id,
+                        FK_AccountId = booking.FK_AccountId,
+                        CustomerName = $"{booking.Account?.FirstName ?? ""} {booking.Account?.LastName ?? ""}".Trim(),
+                        FK_RestaurantId = booking.FK_RestaurantId,
+                        RestaurantName = booking.Restaurant?.RestaurantName,
+                        FK_TableId = booking.FK_TableId,
+                        NumberOfGuests = booking.NumberOfGuests,
+                        BookingStart = booking.BookingStart,
+                        BookingEnd = booking.BookingEnd,
+                        Message = booking.Message ?? "",
+                        OperationResult = "Created"
+                    };
+                }
+
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    throw new Exception("Failed to add booking: " + ex.Message, ex);
+                }
+            }
         }
 
         public async Task DeleteBookingAsync(int bookingId)
@@ -80,15 +99,16 @@ namespace ForkyWebAPI.Services
             var booking = await _bookingRepo.GetBookingByIdAsync(bookingId)
                 ?? throw new KeyNotFoundException($"Booking with ID {bookingId} not found.");
 
-            var availabilityCheck = new AvailabilityCheckDTO
+            var availabilityCheckDTO = new AvailabilityCheckDTO
             {
                 FK_RestaurantId = updateBookingDTO.FK_RestaurantId,
                 StartTime = updateBookingDTO.BookingStart,
                 EndTime = updateBookingDTO.BookingEnd,
-                NumberOfGuests = updateBookingDTO.NumberOfGuests
+                NumberOfGuests = updateBookingDTO.NumberOfGuests,
+                FK_BookingId = bookingId
             };
 
-            var availableTables = await CheckAvailabilityAsync(availabilityCheck);
+            var availableTables = await CheckAvailabilityAsync(availabilityCheckDTO);
 
             if (!availableTables.Any())
             {
@@ -97,6 +117,7 @@ namespace ForkyWebAPI.Services
 
             var selectedTable = availableTables.First();
 
+            booking.Id = bookingId;
             booking.NumberOfGuests = updateBookingDTO.NumberOfGuests;
             booking.BookingStart = updateBookingDTO.BookingStart;
             booking.BookingEnd = updateBookingDTO.BookingEnd;
@@ -188,32 +209,27 @@ namespace ForkyWebAPI.Services
         {
             if (availabilityCheckDTO == null)
             {
-                Console.WriteLine("availabilityCheckDTO=null");
                 throw new ArgumentNullException(nameof(availabilityCheckDTO), "Availability check information cannot be null.");
             }
 
             var availableTables = await _restaurantRepo.GetAvailableTablesAsync(
-            availabilityCheckDTO.FK_RestaurantId,
-            availabilityCheckDTO.StartTime,
-            availabilityCheckDTO.EndTime,
-            availabilityCheckDTO.NumberOfGuests) ??
-                throw new KeyNotFoundException(
-                    "No available tables found for the selected time and number of guests."
-                );
+                availabilityCheckDTO.FK_RestaurantId,
+                availabilityCheckDTO.StartTime,
+                availabilityCheckDTO.EndTime,
+                availabilityCheckDTO.NumberOfGuests,
+                availabilityCheckDTO.FK_BookingId) ?? 
+                throw new KeyNotFoundException("No available tables found for the selected time and number of guests.");
 
-            var availableTableDTOs = availableTables.Select(t =>
+            var availableTableDTOs = availableTables.Select(t => new TableDTO
             {
-                if (t == null) throw new InvalidOperationException("Unexpected null table");
-                return new TableDTO
-                {
-                    Id = t.Id,
-                    TableNumber = t.TableNumber,
-                    AmountOfSeats = t.AmountOfSeats,
-                    FK_RestaurantId = t.FK_RestaurantId
-                };
+                Id = t.Id,
+                TableNumber = t.TableNumber,
+                AmountOfSeats = t.AmountOfSeats,
+                FK_RestaurantId = t.FK_RestaurantId
             });
 
             return availableTableDTOs;
         }
+
     }
 }

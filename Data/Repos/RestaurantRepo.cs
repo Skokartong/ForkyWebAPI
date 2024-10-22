@@ -141,14 +141,39 @@ namespace ForkyWebAPI.Data.Repos
             return await _context.Menus.ToListAsync();
         }
 
-        public async Task<IEnumerable<Table?>> GetAvailableTablesAsync(int restaurantId, DateTime startTime, DateTime endTime, int numberOfGuests)
+        public async Task<IEnumerable<Table>> GetAvailableTablesAsync(int restaurantId, DateTime startTime, DateTime endTime, int numberOfGuests, int? bookingId)
         {
-            return await _context.Tables
-                .Where(t => t.FK_RestaurantId == restaurantId &&
-                t.AmountOfSeats >= numberOfGuests &&
-                !t.Bookings.Any(r => r.BookingStart < endTime && r.BookingEnd > startTime))
+            var query = _context.Tables
+                .Where(t => t.FK_RestaurantId == restaurantId && t.AmountOfSeats >= numberOfGuests);
+
+            var conflictingBookings = await _context.Bookings
+                .Where(b => b.FK_RestaurantId == restaurantId &&
+                            b.BookingStart < endTime && 
+                            b.BookingEnd > startTime && 
+                            (!bookingId.HasValue || b.Id != bookingId)) 
+                .Select(b => b.FK_TableId)
                 .ToListAsync();
+
+            query = query.Where(t => !conflictingBookings.Contains(t.Id));
+
+            var availableTables = await query.ToListAsync();
+
+            if (bookingId.HasValue)
+            {
+                var currentBooking = await _context.Bookings.FindAsync(bookingId.Value);
+                if (currentBooking != null && currentBooking?.FK_TableId != null)
+                {
+                    var currentTable = await _context.Tables.FindAsync(currentBooking.FK_TableId);
+                    if (currentTable != null && currentTable.AmountOfSeats >= numberOfGuests)
+                    {
+                        availableTables.Add(currentTable);
+                    }
+                }
+            }
+
+            return availableTables.Distinct();
         }
+
 
         public async Task<IEnumerable<Menu?>> GetMenuAsync(int restaurantId)
         {

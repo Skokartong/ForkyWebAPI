@@ -25,7 +25,7 @@ namespace ForkyWebAPI.Data.Repos.IRepos
         Task AddTableAsync(Table table);
         Task DeleteTableAsync(Table table);
         Task UpdateTableAsync(Table updatedTable);
-        Task<IEnumerable<Table?>> GetAvailableTablesAsync(int restaurantId, DateTime startTime, DateTime endTime, int numberOfGuests);
+        Task<IEnumerable<Table?>> GetAvailableTablesAsync(int restaurantId, DateTime startTime, DateTime endTime, int numberOfGuests, int? bookingId);
         
         // ADD, DELETE, UPDATE MENU
         Task AddDishOrDrinkAsync(Menu menu);
