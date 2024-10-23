@@ -105,7 +105,6 @@ namespace ForkyWebAPI.Data
                 }
             );
 
-            // Lägg till restauranger
             modelBuilder.Entity<Restaurant>().HasData(
                 new Restaurant
                 {

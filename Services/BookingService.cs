@@ -230,6 +230,5 @@ namespace ForkyWebAPI.Services
 
             return availableTableDTOs;
         }
-
     }
 }
